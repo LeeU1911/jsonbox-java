@@ -19,23 +19,30 @@ public abstract class ApiResource {
         return builder.create();
     }
 
-    static String request(String requestMethod, String requestBody) {
+    static HttpResponse request(String requestMethod, String requestBody) {
         assert JsonBox.getApiBase() != null;
         assert JsonBox.boxId != null;
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId;
+        return request(uri, requestMethod, requestBody);
+    }
+
+    private static HttpResponse request(String uri, String requestMethod, String requestBody) {
         HttpURLConnection connection;
         try {
-            URL url = new URL(JsonBox.getApiBase() + "/" + JsonBox.boxId);
+            URL url = new URL(uri);
             connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod(requestMethod);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            connection.setDoOutput(true);
-            OutputStream os = connection.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-            osw.write(requestBody);
-            osw.flush();
-            osw.close();
-            os.close();
+            if (requestBody != null) {
+                connection.setDoOutput(true);
+                OutputStream os = connection.getOutputStream();
+                OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+                osw.write(requestBody);
+                osw.flush();
+                osw.close();
+                os.close();
+            }
             connection.connect();
 
             int status = connection.getResponseCode();
@@ -43,7 +50,7 @@ public abstract class ApiResource {
             String result;
             if (status > 299) {
                 bis = new BufferedInputStream(connection.getErrorStream());
-            }else {
+            } else {
                 bis = new BufferedInputStream(connection.getInputStream());
             }
             ByteArrayOutputStream buf = new ByteArrayOutputStream();
@@ -54,7 +61,7 @@ public abstract class ApiResource {
             }
             result = buf.toString();
             connection.disconnect();
-            return result;
+            return new HttpResponse(status, result);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ProtocolException e) {
@@ -62,6 +69,48 @@ public abstract class ApiResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return new HttpResponse(-1, "");
+    }
+
+    static HttpResponse get(String id) {
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
+        return request(uri, "GET", null);
+    }
+
+    static HttpResponse put(String id, String requestBody){
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
+        return request(uri, "PUT", requestBody);
+    }
+
+    static HttpResponse delete(String id) {
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
+        return request(uri, "DELETE", null);
+    }
+
+    static class HttpResponse {
+        private int statusCode;
+
+        public int getStatusCode() {
+            return this.statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        private String responseBody;
+
+        public String getResponseBody() {
+            return this.responseBody;
+        }
+
+        public void setResponseBody(String responseBody) {
+            this.responseBody = responseBody;
+        }
+
+        public HttpResponse(int statusCode, String responseBody) {
+            this.statusCode = statusCode;
+            this.responseBody = responseBody;
+        }
     }
 }
