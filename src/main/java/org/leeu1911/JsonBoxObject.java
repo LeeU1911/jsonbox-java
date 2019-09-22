@@ -16,6 +16,15 @@ public abstract class JsonBoxObject extends ApiResource {
         return GSON.fromJson(response.getResponseBody(), clazz);
     }
 
+    public static <T> T create(String collection, Object object, Class<T> clazz) {
+        String jsonObject = GSON.toJson(object);
+        HttpResponse response = requestWithPath(collection, "POST", jsonObject);
+        if (response.getStatusCode() > 299) {
+            return null;
+        }
+        return GSON.fromJson(response.getResponseBody(), clazz);
+    }
+
     public static <T> T findById(String recordId, Class<T> clazz){
         HttpResponse response = get(recordId);
         if (response.getStatusCode() > 299) {

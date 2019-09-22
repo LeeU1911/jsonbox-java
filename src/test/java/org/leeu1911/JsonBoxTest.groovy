@@ -21,6 +21,19 @@ def class JsonBoxTest extends Specification {
         result.name == object.name
     }
 
+    def "create record in collection"() {
+        given:
+        TestEntity object = new TestEntity(name: "json_box_test_record_1")
+        when:
+        def result = JsonBoxObject.create("test_collection", object, TestEntity.class)
+
+        then:
+        result != null
+        result._id != null
+        result._createdOn != null
+        result.name == object.name
+    }
+
     def "get record by id"(){
         given:
         TestEntity object = new TestEntity(name: "json_box_test_record_2")

@@ -26,6 +26,13 @@ public abstract class ApiResource {
         return request(uri, requestMethod, requestBody);
     }
 
+    static HttpResponse requestWithPath(String path, String requestMethod, String requestBody) {
+        assert JsonBox.getApiBase() != null;
+        assert JsonBox.boxId != null;
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + path;
+        return request(uri, requestMethod, requestBody);
+    }
+
     private static HttpResponse request(String uri, String requestMethod, String requestBody) {
         HttpURLConnection connection;
         try {
