@@ -1,4 +1,6 @@
 # jsonbox-java
+[![](https://jitpack.io/v/LeeU1911/jsonbox-java.svg)](https://jitpack.io/#LeeU1911/jsonbox-java)
+
 Java Wrapper for Jsonbox https://github.com/vasanthv/jsonbox
 
 # Usages
