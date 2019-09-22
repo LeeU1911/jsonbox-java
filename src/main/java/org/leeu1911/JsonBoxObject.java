@@ -1,11 +1,9 @@
 package org.leeu1911;
 
-import java.net.HttpURLConnection;
-
 public abstract class JsonBoxObject extends ApiResource {
-    public static String create(String jsonObject) {
-        String result = request("POST", jsonObject);
-        return result;
+    public static <T> T create(Object object, Class<T> clazz) {
+        String jsonObject = GSON.toJson(object);
+        return GSON.fromJson(request("POST", jsonObject), clazz);
     }
 
     public static String findById(String recordId){

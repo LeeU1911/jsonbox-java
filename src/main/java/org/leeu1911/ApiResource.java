@@ -15,10 +15,7 @@ public abstract class ApiResource {
     public static final Gson GSON = createGson();
 
     private static Gson createGson() {
-        GsonBuilder builder =
-                new GsonBuilder()
-                        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
-
+        GsonBuilder builder = new GsonBuilder();
         return builder.create();
     }
 
