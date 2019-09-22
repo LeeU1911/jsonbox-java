@@ -9,12 +9,15 @@ def class JsonBoxTest extends Specification {
 
     def "create record"() {
         given:
-        String object = "{'id': 'json_box_test_record_1'}"
+        String object = "{\"name\": \"json_box_test_record_1\"}"
 
         when:
         def result = JsonBoxObject.create(object)
 
         then:
         result != null
+        result != ""
+        result.contains("_id")
+        result.contains("_createdOn")
     }
 }
