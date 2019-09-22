@@ -20,5 +20,10 @@ dependencies {
 	}
 
 ```
+
+# Todo
+1. Add support for sort/paging in Query operation
+2. Add support for filter in Query operation
+
 # LICENSE
 MIT
