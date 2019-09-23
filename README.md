@@ -18,9 +18,8 @@ Java Wrapper for Jsonbox https://github.com/vasanthv/jsonbox
 ### Gradle
 ```$xslt
 dependencies {
-	        implementation 'com.github.LeeU1911:jsonbox-java:0.0.1'
-	}
-
+    implementation 'com.github.LeeU1911:jsonbox-java:0.0.1'
+}
 ```
 
 # Todo
