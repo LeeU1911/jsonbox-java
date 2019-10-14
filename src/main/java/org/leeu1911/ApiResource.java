@@ -1,18 +1,21 @@
 package org.leeu1911;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.lang.reflect.Type;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ApiResource {
     public static final Gson GSON = createGson();
+    public static HashMap<String, Object> queryParameters;
 
     private static Gson createGson() {
         GsonBuilder builder = new GsonBuilder();
@@ -79,8 +82,11 @@ public abstract class ApiResource {
         return new HttpResponse(-1, "");
     }
 
-    static HttpResponse get(String id) {
+    static HttpResponse get(String id, HashMap<String, Object> queryParameters) {
         String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
+        if(queryParameters!=null){
+            uri = uri + "?" + getQueryParameters(queryParameters);
+        }
         return request(uri, "GET", null);
     }
 
@@ -92,6 +98,58 @@ public abstract class ApiResource {
     static HttpResponse delete(String id) {
         String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
         return request(uri, "DELETE", null);
+    }
+
+    public static String getQueryParameters(HashMap<String, Object> queryParameters){
+        StringBuilder data = new StringBuilder();
+        for (Map.Entry<String,Object> parameter : queryParameters.entrySet()) {
+            if (data.length() != 0){
+                data.append('&');
+            }
+            try {
+                data.append(URLEncoder.encode(parameter.getKey(), "UTF-8"));
+                data.append('=');
+                data.append(URLEncoder.encode(String.valueOf(parameter.getValue()), "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return data.toString();
+    }
+
+    public static <T> List<T> parseHttpResponse(HttpResponse response){
+        if (response.getStatusCode() > 299) {
+            return null;
+        }
+        Type listType = new TypeToken<ArrayList<T>>(){}.getType();
+        return GSON.fromJson(response.getResponseBody(), listType);
+    }
+
+    public static String createSortParameter(String orderBy, String orderDirection){
+        if(orderBy == null){
+            throw new IllegalArgumentException("OrderBy parameter must be non-null");
+        }
+        if(orderDirection == null){
+            throw new IllegalArgumentException("OrderDirection parameter must be non-null");
+        }
+        if(!"ASC".equals(orderDirection) && !"DESC".equals(orderDirection)){
+            throw new IllegalArgumentException("OrderDirection parameter must be ASC or DESC, received " + orderDirection);
+        }
+
+        if(orderDirection.equals("DESC")){
+            orderBy = "-" + orderBy;
+        }
+        return orderBy;
+    }
+
+    public static int createSkipParameter(int page, int size){
+        if(page<0){
+            throw new IllegalArgumentException("Page parameter must be non-negative, received " + page);
+        }
+        if(size<0){
+            throw new IllegalArgumentException("Size parameter must be non-negative, received " + size);
+        }
+        return page * size;
     }
 
     static class HttpResponse {

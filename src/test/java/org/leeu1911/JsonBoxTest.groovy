@@ -1,6 +1,5 @@
 package org.leeu1911
 
-
 import spock.lang.Specification
 
 def class JsonBoxTest extends Specification {
@@ -87,6 +86,85 @@ def class JsonBoxTest extends Specification {
 
         then:
         updated == null
+    }
+
+    def "get records sorted"(){
+        given:
+        TestEntity firstObject = new TestEntity(name: "json_box_test_record_5")
+        TestEntity secondObject = new TestEntity(name: "json_box_test_record_6")
+        TestEntity thirdObject = new TestEntity(name: "json_box_test_record_7")
+        def firstCreated = JsonBoxObject.create("sorted_collection", firstObject, TestEntity.class)
+        def secondCreated = JsonBoxObject.create("sorted_collection", secondObject, TestEntity.class)
+        def thirdCreated = JsonBoxObject.create("sorted_collection", thirdObject, TestEntity.class)
+
+        when:
+        List<TestEntity> results = JsonBoxObject.findAll("sorted_collection", "name", "DESC")
+
+        then:
+        results != null
+        results.get(0) != null
+        results.get(0).name == thirdCreated.name
+        results.get(1) != null
+        results.get(1).name == secondCreated.name
+        results.get(2) != null
+        results.get(2).name == firstCreated.name
+
+        cleanup:
+        JsonBoxObject.deleteById(firstCreated._id)
+        JsonBoxObject.deleteById(secondCreated._id)
+        JsonBoxObject.deleteById(thirdCreated._id)
+    }
+
+    def "get records with pagination"(){
+        given:
+        TestEntity firstObject = new TestEntity(name: "json_box_test_record_8")
+        TestEntity secondObject = new TestEntity(name: "json_box_test_record_9")
+        TestEntity thirdObject = new TestEntity(name: "json_box_test_record_10")
+        def firstCreated = JsonBoxObject.create("page_collection", firstObject, TestEntity.class)
+        def secondCreated = JsonBoxObject.create("page_collection", secondObject, TestEntity.class)
+        def thirdCreated = JsonBoxObject.create("page_collection", thirdObject, TestEntity.class)
+
+        when:
+        List<TestEntity> results = JsonBoxObject.findAll("page_collection", 0, 2)
+
+        then:
+        results != null
+        results.size() == 2
+        results.get(0) != null
+        results.get(0).name == thirdCreated.name
+        results.get(1) != null
+        results.get(1).name == secondCreated.name
+
+        cleanup:
+        JsonBoxObject.deleteById(firstCreated._id)
+        JsonBoxObject.deleteById(secondCreated._id)
+        JsonBoxObject.deleteById(thirdCreated._id)
+    }
+
+    def "get records sorted with pagination"(){
+        given:
+        TestEntity firstObject = new TestEntity(name: "json_box_test_record_11")
+        TestEntity secondObject = new TestEntity(name: "json_box_test_record_12")
+        TestEntity thirdObject = new TestEntity(name: "json_box_test_record_13")
+        def firstCreated = JsonBoxObject.create("page_sort_collection", firstObject, TestEntity.class)
+        def secondCreated = JsonBoxObject.create("page_sort_collection", secondObject, TestEntity.class)
+        def thirdCreated = JsonBoxObject.create("page_sort_collection", thirdObject, TestEntity.class)
+
+        when:
+        List<TestEntity> results = JsonBoxObject.findAll("page_sort_collection", "name", "ASC", 0, 2)
+
+        then:
+        results != null
+        results.size() == 2
+        results.get(0) != null
+        results.get(0).name == firstCreated.name
+        results.get(1) != null
+        results.get(1).name == secondCreated.name
+
+        cleanup:
+        JsonBoxObject.deleteById(firstCreated._id)
+        JsonBoxObject.deleteById(secondCreated._id)
+        JsonBoxObject.deleteById(thirdCreated._id)
     }
 
     def class TestEntity {
