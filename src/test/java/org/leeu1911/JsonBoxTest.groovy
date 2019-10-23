@@ -33,7 +33,7 @@ def class JsonBoxTest extends Specification {
         result.name == object.name
     }
 
-    def "get record by id"(){
+    def "get record by id"() {
         given:
         TestEntity object = new TestEntity(name: "json_box_test_record_2")
         def created = JsonBoxObject.create(object, TestEntity.class)
@@ -48,7 +48,7 @@ def class JsonBoxTest extends Specification {
         result.name == created.name
     }
 
-    def "update record"(){
+    def "update record"() {
         given:
         TestEntity object = new TestEntity(name: "json_box_test_record_3")
         def created = JsonBoxObject.create(object, TestEntity.class)
@@ -70,7 +70,7 @@ def class JsonBoxTest extends Specification {
         updated.name == created.name
     }
 
-    def "delete record"(){
+    def "delete record"() {
         given:
         TestEntity object = new TestEntity(name: "json_box_test_record_4")
         def created = JsonBoxObject.create(object, TestEntity.class)
@@ -88,7 +88,7 @@ def class JsonBoxTest extends Specification {
         updated == null
     }
 
-    def "get records sorted"(){
+    def "get records sorted"() {
         given:
         TestEntity firstObject = new TestEntity(name: "json_box_test_record_5")
         TestEntity secondObject = new TestEntity(name: "json_box_test_record_6")
@@ -115,7 +115,7 @@ def class JsonBoxTest extends Specification {
         JsonBoxObject.deleteById(thirdCreated._id)
     }
 
-    def "get records with pagination"(){
+    def "get records with pagination"() {
         given:
         TestEntity firstObject = new TestEntity(name: "json_box_test_record_8")
         TestEntity secondObject = new TestEntity(name: "json_box_test_record_9")
@@ -141,7 +141,7 @@ def class JsonBoxTest extends Specification {
         JsonBoxObject.deleteById(thirdCreated._id)
     }
 
-    def "get records sorted with pagination"(){
+    def "get records sorted with pagination"() {
         given:
         TestEntity firstObject = new TestEntity(name: "json_box_test_record_11")
         TestEntity secondObject = new TestEntity(name: "json_box_test_record_12")

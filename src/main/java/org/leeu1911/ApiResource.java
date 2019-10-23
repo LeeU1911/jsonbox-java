@@ -84,13 +84,13 @@ public abstract class ApiResource {
 
     static HttpResponse get(String id, HashMap<String, Object> queryParameters) {
         String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
-        if(queryParameters!=null){
+        if (queryParameters != null) {
             uri = uri + "?" + getQueryParameters(queryParameters);
         }
         return request(uri, "GET", null);
     }
 
-    static HttpResponse put(String id, String requestBody){
+    static HttpResponse put(String id, String requestBody) {
         String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
         return request(uri, "PUT", requestBody);
     }
@@ -100,10 +100,10 @@ public abstract class ApiResource {
         return request(uri, "DELETE", null);
     }
 
-    public static String getQueryParameters(HashMap<String, Object> queryParameters){
+    public static String getQueryParameters(HashMap<String, Object> queryParameters) {
         StringBuilder data = new StringBuilder();
-        for (Map.Entry<String,Object> parameter : queryParameters.entrySet()) {
-            if (data.length() != 0){
+        for (Map.Entry<String, Object> parameter : queryParameters.entrySet()) {
+            if (data.length() != 0) {
                 data.append('&');
             }
             try {
@@ -117,36 +117,36 @@ public abstract class ApiResource {
         return data.toString();
     }
 
-    public static <T> List<T> parseHttpResponse(HttpResponse response){
+    public static <T> List<T> parseHttpResponse(HttpResponse response) {
         if (response.getStatusCode() > 299) {
             return null;
         }
-        Type listType = new TypeToken<ArrayList<T>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<T>>() {}.getType();
         return GSON.fromJson(response.getResponseBody(), listType);
     }
 
-    public static String createSortParameter(String orderBy, String orderDirection){
-        if(orderBy == null){
+    public static String createSortParameter(String orderBy, String orderDirection) {
+        if (orderBy == null) {
             throw new IllegalArgumentException("OrderBy parameter must be non-null");
         }
-        if(orderDirection == null){
+        if (orderDirection == null) {
             throw new IllegalArgumentException("OrderDirection parameter must be non-null");
         }
-        if(!"ASC".equals(orderDirection) && !"DESC".equals(orderDirection)){
+        if (!"ASC".equals(orderDirection) && !"DESC".equals(orderDirection)) {
             throw new IllegalArgumentException("OrderDirection parameter must be ASC or DESC, received " + orderDirection);
         }
 
-        if(orderDirection.equals("DESC")){
+        if (orderDirection.equals("DESC")) {
             orderBy = "-" + orderBy;
         }
         return orderBy;
     }
 
-    public static int createSkipParameter(int page, int size){
-        if(page<0){
+    public static int createSkipParameter(int page, int size) {
+        if (page < 0) {
             throw new IllegalArgumentException("Page parameter must be non-negative, received " + page);
         }
-        if(size<0){
+        if (size < 0) {
             throw new IllegalArgumentException("Size parameter must be non-negative, received " + size);
         }
         return page * size;
