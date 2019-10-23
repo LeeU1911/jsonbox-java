@@ -90,6 +90,11 @@ public abstract class ApiResource {
         return request(uri, "GET", null);
     }
 
+    static HttpResponse get(String filterQuery) {
+        String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + filterQuery;
+        return request(uri, "GET", null);
+    }
+
     static HttpResponse put(String id, String requestBody) {
         String uri = JsonBox.getApiBase() + "/" + JsonBox.boxId + "/" + id;
         return request(uri, "PUT", requestBody);

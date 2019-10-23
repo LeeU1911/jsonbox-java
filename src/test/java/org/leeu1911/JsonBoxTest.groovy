@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 def class JsonBoxTest extends Specification {
     def setup() {
-        JsonBox.boxId = "json_box_java_test_22092019"
+        JsonBox.boxId = UUID.randomUUID().toString().replaceAll("-","_")
     }
 
     def "create record"() {
@@ -167,9 +167,117 @@ def class JsonBoxTest extends Specification {
         JsonBoxObject.deleteById(thirdCreated._id)
     }
 
+    def "get records by number filter"() {
+        given:
+        TestEntity object = new TestEntity(name: "arya stark", age: 16)
+        def createdFirst = JsonBoxObject.create(object, TestEntity.class)
+        object = new TestEntity(name: "Daenerys Targaryen", age: 25)
+        def createdSecond =JsonBoxObject.create(object, TestEntity.class)
+        def filterQuery = "age:=18"
+
+        when:
+        def result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        result.isEmpty()
+
+        when:
+        filterQuery = "age:>=18"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        !result.isEmpty()
+        result.get(0).name == createdSecond.name
+
+        when:
+        filterQuery = "age:>=16"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        result.size() == 2
+
+        when:
+        filterQuery = "age:<=16"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        result.size() == 1
+        result.get(0).name == createdFirst.name
+
+        when:
+        filterQuery = "age:<16"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        result.isEmpty()
+
+        when:
+        filterQuery = "age:>25"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        result != null
+        result.isEmpty()
+
+    }
+
+    def "get record by string filter"() {
+        given:
+        TestEntity object = new TestEntity(name: "arya stark")
+        def created = JsonBoxObject.create(object, TestEntity.class)
+        def filterQuery = "name:arya%20stark"
+
+        when:
+        def result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        verifyResult(result, created)
+
+        when:
+        filterQuery = "name:arya stark"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        verifyResult(result, created)
+
+        when:
+        filterQuery = "name:arya*"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        verifyResult(result, created)
+
+        when:
+        filterQuery = "name:*stark"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        verifyResult(result, created)
+
+        when:
+        filterQuery = "name:*ya*"
+        result = JsonBoxObject.findByFilter(filterQuery, TestEntity.class)
+
+        then:
+        verifyResult(result, created)
+    }
+
+    private void verifyResult(List<TestEntity> result, TestEntity created) {
+        result != null
+        !result.isEmpty()
+        result.get(0).name == created.name
+        result.get(0).age == created.age
+    }
+
     def class TestEntity {
         String _id
         String _createdOn
         String name
+        Integer age
     }
 }
