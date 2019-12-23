@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 def class JsonBoxTest extends Specification {
     def setup() {
-        JsonBox.boxId = UUID.randomUUID().toString().replaceAll("-","_")
+        JsonBox.boxId = "json_box_java_test_22092019"
     }
 
     def "create record"() {

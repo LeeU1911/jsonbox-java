@@ -49,7 +49,7 @@ public abstract class JsonBoxObject extends ApiResource {
                 return null;
             }
             Type type = TypeToken.getParameterized(ArrayList.class, clazz).getType();
-            return GSON.fromJson(response.getResponseBody(), type);
+            return parseHttpResponse(response);
         }
         return null;
     }
